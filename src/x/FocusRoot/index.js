@@ -5,12 +5,15 @@ import container from './Container';
 
 class FocusRoot extends Component {
   static propTypes = {
-      index: PropTypes.number.isRequired,
-      type: PropTypes.string.isRequired,   
-      path: PropTypes.string.isRequired,
+    focusable: PropTypes.object,
       className: PropTypes.string,
-      registerFocusable: PropTypes.func.isRequired,      
+      registerFocusRoot: PropTypes.func.isRequired,      
   };
+  
+  static contextTypes = {
+    focusManager: React.PropTypes.object,
+  };
+
   
   constructor(props) {
       super(props);
@@ -20,12 +23,12 @@ class FocusRoot extends Component {
   }
   
   componentDidMount() {
-    const { index, type, path, registerFocusable } = this.props;
-    registerFocusable({ index, type, path });
+    const { focusable, registerFocusRoot } = this.props;
+    console.log(focusable)
+    registerFocusRoot(focusable);
 
       // manually handle focusing by listening for key events
       window.addEventListener('keydown', this.handleKeyDown);
-      
   }
   
   componentWillUnmount() {

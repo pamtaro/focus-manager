@@ -1,6 +1,6 @@
 
 import { connect } from 'react-redux';
-import { registerFocusable } from '../actions';
+import { registerFocusRoot } from '../actions';
 
 function mapStateToProps({ focusHistory }) {
     return { focusHistory };
@@ -8,7 +8,7 @@ function mapStateToProps({ focusHistory }) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        registerFocusable: (focusable) => dispatch(registerFocusable(focusable)),
+        //registerFocusRoot: (focusable) => dispatch(registerFocusRoot(focusable)),
     };
 }
 

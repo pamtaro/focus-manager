@@ -1,0 +1,46 @@
+.outer-grid {
+  display: flex;
+  flex-direction: row;
+  background: #AA3800;
+  color: white;
+  margin: 1%;
+  padding: 5px;
+}
+
+.inner-grid {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  background: #BF9620;
+  color: white;
+  margin: 1%;
+  padding: 5px;
+}
+
+.focus-item {
+  border: 2px solid transparent;
+  flex: 1 0 auto;
+  background: #237CA1;
+  color: white;
+  margin: 1%;
+  padding: 5px;
+}
+
+.focus-item:focus {
+  border-color: white;
+}
+
+.App {
+  text-align: center;
+}
+
+a {
+  width: 100px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  color: white;
+  padding: 10px 2px;
+  background: #23A169;
+  font-weight: bold;
+}

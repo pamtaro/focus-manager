@@ -1,7 +1,7 @@
 
 export const actionTypes = {
     FOCUS: {
-        REGISTER_FOCUSABLE: 'FOCUS.REGISTER_FOCUSABLE',
+        UPDATE_HISTORY: 'FOCUS.UPDATE_HISTORY',
     },
 };
 
