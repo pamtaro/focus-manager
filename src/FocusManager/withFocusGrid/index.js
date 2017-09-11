@@ -13,8 +13,9 @@ function withFocusGrid(WrappedComponent) {
         static propTypes = {
             index: PropTypes.number.isRequired,
             type: PropTypes.string.isRequired,
-            parentFocusable: PropTypes.object.isRequired,
+            focusableParent: PropTypes.object.isRequired,
             className: PropTypes.string,
+            setFocusedItem: PropTypes.func.isRequired,
             updateFocusHistory: PropTypes.func.isRequired,
         };          
         
@@ -26,17 +27,26 @@ function withFocusGrid(WrappedComponent) {
             super(props, context);
 
             this.updateFocusGridHistory = this.updateFocusGridHistory.bind(this);
+            this.setFocus = this.setFocus.bind(this);
+        }
+
+        setFocus(focusedItem) {
+            const { setFocusedItem } = this.props;
+            const { focusManager } = this.context;
+            setFocusedItem(focusManager, focusedItem);     
         }
 
         updateFocusGridHistory() {
             const { updateFocusHistory, index, type } = this.props;
             const { focusManager } = this.context;
-            const focusHistory = focusManager.getFocusHistory();
-            updateFocusHistory(focusHistory);
+            updateFocusHistory(focusManager);
         }
 
         render() {  
-            return (<WrappedComponent { ...this.context } { ...this.props } updateFocusGridHistory={this.updateFocusGridHistory} />);
+            return (<WrappedComponent { ...this.context } { ...this.props } 
+                updateFocusGridHistory={this.updateFocusGridHistory}
+                setFocus={this.setFocus}
+                />);
         }
     };
 }

@@ -1,14 +1,17 @@
 
 import { connect } from 'react-redux';
-import { updateFocusHistory } from '../actions';
+import { updateFocusHistory, rootMounted, focusingHandled, updateFocusingStatus } from '../actions';
 
-function mapStateToProps({ focusHistory }) {
-    return { focusHistory };
+function mapStateToProps({ focusHistory, focusingStatus }) {
+    return { focusHistory, focusingStatus };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        updateFocusHistory: (focusHistory) => dispatch(updateFocusHistory(focusHistory)),
+        updateFocusHistory: (focusManager) => dispatch(updateFocusHistory(focusManager)),
+        rootMounted: () => dispatch(rootMounted()),
+        focusingHandled: () => dispatch(focusingHandled()),
+        updateFocusingStatus: (status) => dispatch(updateFocusingStatus(status)),
     };
 }
 

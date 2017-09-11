@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import FocusItem from './FocusItem';
-import FocusGridInner from './FocusGridInner';
+import FocusableItem from './FocusableItem';
+import FocusableColumn from './FocusableColumn';
 import { focusableTypes } from '../FocusManager/types';
 import withFocusGrid from '../FocusManager/withFocusGrid';
 
-class FocusGrid extends Component {  
+class FocusableRow extends Component {  
     
   constructor(props, context) {
     super(props, context);
@@ -17,36 +17,39 @@ class FocusGrid extends Component {
   
   componentDidUpdate() {
       const { updateFocusGridHistory } = this.props;
-      updateFocusGridHistory();
+      const { handleUpdate } = this.state;
+      if (handleUpdate) {
+        updateFocusGridHistory();
+        this.setState({ handleUpdate: false});
+      }
   }
   
   clickHandler() {
     const { childCount } = this.state;
-    this.setState({ childCount: childCount+1 });
+    this.setState({ childCount: childCount+1, handleUpdate: true });
   }  
 
   render() {
     const { childCount } = this.state;
-    const { className, index, type, parentFocusable } = this.props;
+    const { className, index } = this.props;
     return (
       <div className={`outer-grid ${className}`}>
-        <a onClick={this.clickHandler}>Add Child</a>
+        <div>
+          <a onClick={this.clickHandler}>Add Child</a>
+          <br/>
           <h4>Outer Grid {index}</h4>
+        </div>
         {[...Array(childCount)].map((x, i) => {            
             const innerProps = {
                 index: i,  
-                parentFocusable: {
-                    index,
-                    type,
-                    parentFocusable,
-                },
+                focusableParent: this.props
             }
-            return (index % 2 === 0 ? <FocusGridInner key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL }} />
-                : <FocusItem key={i} { ...innerProps } />);
+            return (index % 2 === 0 ? <FocusableColumn key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL }} />
+                : <FocusableItem key={i} { ...innerProps } />);
         })}
       </div>
     );
   }
 }
 
-export default withFocusGrid(FocusGrid);
+export default withFocusGrid(FocusableRow);

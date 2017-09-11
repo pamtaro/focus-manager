@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 
 import { focusableTypes } from '../FocusManager/types';
 import { FocusManager } from '../FocusManager';
-import FocusRoot from './FocusRoot';
-import FocusGrid from './FocusGrid';
+import FocusableRoot from './FocusableRoot';
+import FocusableRow from './FocusableRow';
+import * as keyHelpers from '../SampleApp/keyHelpers';
+
 
 import './App.css';
 
@@ -17,7 +19,7 @@ class App extends Component {
     super(props, context);
 
     this.childContext = {
-      focusManager: new FocusManager()
+      focusManager: new FocusManager(keyHelpers, 0.2)
     };
 
     this.state = { childCount: 3 };
@@ -28,9 +30,6 @@ class App extends Component {
       return this.childContext;
   }
 
-  componentDidMount() {    
-  }
-
   clickHandler() {
     const { childCount } = this.state;
     this.setState({ childCount: childCount+1 });
@@ -38,26 +37,25 @@ class App extends Component {
 
   render() {  
     const { childCount } = this.state;
-    const rootFocusable = {
+    const rootProps = {
       type: focusableTypes.ROOT,
       path: 'index',
       index: 0,
-    };
-    const rootProps = {
-      ...rootFocusable
+      className: 'sample-focus-root',
+      childCount,
     }
     return (
       <div className="App">
         <a onClick={this.clickHandler}>Add Row</a>
-        <FocusRoot {...rootProps}>
+        <FocusableRoot {...rootProps}>
           {[...Array(childCount)].map((x, i) => {
             const outerProps = {
               index: i,
-              parentFocusable: rootFocusable
+              focusableParent: rootProps
             }
-            return (<FocusGrid key={i} {...outerProps} />);
+            return (<FocusableRow key={i} {...outerProps} />);
           })}
-        </FocusRoot>
+        </FocusableRoot>
       </div>
     );
   }

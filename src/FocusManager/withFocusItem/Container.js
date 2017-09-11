@@ -1,8 +1,16 @@
 
 import { connect } from 'react-redux';
+import { focusingHandled } from '../actions';
 
-function mapStateToProps({ focusHistory }) {
-    return { focusHistory };
+
+function mapStateToProps({ focusHistory, focusingStatus }) {
+    return { focusHistory, focusingStatus };
 }
 
-export default (Component) => connect(mapStateToProps)(Component);
+function mapDispatchToProps(dispatch) {
+    return {
+        focusingHandled: () => dispatch(focusingHandled()),
+    };
+}
+
+export default (Component) => connect(mapStateToProps, mapDispatchToProps)(Component);

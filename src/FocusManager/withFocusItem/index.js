@@ -1,19 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { focusableTypes } from '../types';
+import { focusableTypes, focusItemStates } from '../types';
 import container from './Container';
 
 function withFocusItem(WrappedComponent) {
     return class extends React.Component {
         static defaultProps = {
+            focusedStatus: focusItemStates.DEFAULT,
             type: focusableTypes.ITEM,
         };
 
         static propTypes = {
             index: PropTypes.number.isRequired,
             type: PropTypes.string.isRequired,
-            parentFocusable: PropTypes.object.isRequired,
+            focusableParent: PropTypes.object.isRequired,
             className: PropTypes.string,
             focusHistory: PropTypes.array,
         };      
@@ -22,21 +23,25 @@ function withFocusItem(WrappedComponent) {
             focusManager: PropTypes.object,
         };  
 
-        componentDidMount() {    
-            const { index, type, parentFocusable, focusHistory } = this.props;
-            const { focusManager } = this.context;
-            focusManager.registerFocusable(focusHistory, {index, type, parentFocusable})
-            console.log('withFocusItem -- componentDidMount');
+        constructor(props, context) {
+            super(props, context);
+            this.state = { focusedStatus: props.focusedStatus };
         }
 
-        // componentWillReceiveProps(nextProps) {
-        //     const { index, type, parentFocusable, focusHistory } = this.props;
-        //     const { focusManager } = this.context;
-        //     focusManager.registerFocusable(focusHistory, {index, type, parentFocusable})
-        // }
+        componentDidMount() {    
+            const { focusHistory } = this.props;
+            const { focusManager } = this.context;
+            focusManager.registerFocusable(this.props, focusHistory);
+        }
+
+        componentWillReceiveProps(nextProps) {
+            const { focusManager } = this.context;
+            const focusItem = focusManager.getFocusItem(this.props, nextProps.focusHistory);
+            this.setState({ focusedStatus: focusItem.focusedStatus });
+        }
 
         render() {  
-            return (<WrappedComponent { ...this.context } { ...this.props } />);
+            return (<WrappedComponent { ...this.context } { ...this.props } focusedStatus={this.state.focusedStatus} />);
         }
     };
 }
