@@ -1,6 +1,6 @@
 
 import { connect } from 'react-redux';
-import { setFocusedItem, updateFocusHistory, focusingHandled } from '../actions';
+import { setFocusedItemFromComponent, updateFocusHistory, focusingHandled } from '../actions';
 
 function mapStateToProps({ focusHistory, focusingStatus }) {
     return { focusHistory, focusingStatus };
@@ -8,7 +8,7 @@ function mapStateToProps({ focusHistory, focusingStatus }) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        setFocusedItem: (focusManager, focusedItem) => dispatch(setFocusedItem(focusManager, focusedItem)),
+        setFocusedItemFromComponent: (focusManager, focusedItem) => dispatch(setFocusedItemFromComponent(focusManager, focusedItem)),
         updateFocusHistory: (focusManager) => dispatch(updateFocusHistory(focusManager)),
         focusingHandled: () => dispatch(focusingHandled()),
     };

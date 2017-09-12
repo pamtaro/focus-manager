@@ -7,7 +7,15 @@ const defaultState = {
 export default (state = defaultState, action) => {
     switch (action.type) {
         
-        case actionTypes.FOCUS.SET_FOCUSED_ITEM:
+        case actionTypes.FOCUS.SET_FOCUSED_ITEM: {
+            const { currentFocus, focusHistory } = action;
+            return {
+                ...state,
+                currentFocus,
+                focusHistory,
+            }
+        }
+
         case actionTypes.FOCUS.UPDATE_HISTORY: {
             const { focusHistory } = action;
             return { ...state, focusHistory };

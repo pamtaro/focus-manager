@@ -17,6 +17,7 @@ function withFocusItem(WrappedComponent) {
             focusableParent: PropTypes.object.isRequired,
             className: PropTypes.string,
             focusHistory: PropTypes.array,
+            focusingHandled: PropTypes.func.isRequired,
         };      
 
         static contextTypes = {
@@ -36,8 +37,17 @@ function withFocusItem(WrappedComponent) {
 
         componentWillReceiveProps(nextProps) {
             const { focusManager } = this.context;
+            const { focusedStatus } = this.state;
             const focusItem = focusManager.getFocusItem(this.props, nextProps.focusHistory);
-            this.setState({ focusedStatus: focusItem.focusedStatus });
+            this.setState({ previousStatus: focusedStatus, focusedStatus: focusItem.focusedStatus });
+        }
+
+        componentDidUpdate() {
+            const { focusingHandled } = this.props;
+            const { focusedStatus, previousStatus } = this.state;
+            if (focusedStatus === focusItemStates.FOCUSED && previousStatus !== focusItemStates.FOCUSED) {
+                focusingHandled();
+            }
         }
 
         render() {  

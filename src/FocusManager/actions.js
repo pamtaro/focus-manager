@@ -1,5 +1,5 @@
 import { actionTypes, focusingStates } from './types';
-import { normalizeHierarchy } from './helpers';
+import { normalizeTree } from './helpers';
 
 export function updateFocusHistory(focusManager) {    
     const focusHistory = focusManager.getFocusHistory();
@@ -9,28 +9,20 @@ export function updateFocusHistory(focusManager) {
     };
 }
 
-export function updateFocusedItem(focusManager, focusedItem) {
-    // filter/normalize the focusable item
-    const filterFocusable = normalizeHierarchy(focusedItem);
-    const focusHistory = focusManager.setFocusStatusHistory(focusedItem);
-    return {
-        type: actionTypes.FOCUS.SET_FOCUSED_ITEM,
-        focusHistory
-    };
+export function setFocusedItemFromComponent(focusManager, focusedItem) {
+    const currentFocus = focusManager.setCurrentFocusFromComponent(focusedItem);
+    const focusHistory = focusManager.updateFocusHistoryFocusItemStates(currentFocus);
+    return setFocusedItem(currentFocus, focusHistory);
 }
 
-export function setFocusedItem(focusManager, focusedItem) {
-    return (dispatch) => {
-        dispatch(updateFocusedItem(focusManager, focusedItem));
-        dispatch(focusingHandled());
-    };
-}
-
-export function updateFocusingStatus(focusingStatus) {
-    return {
-        type: actionTypes.FOCUS.UPDATE_FOCUSING_STATUS,
-        focusingStatus,
-    };
+export function moveFocus(focusManager, directionStatus) {
+    return (dispatch) => {        
+        const currentFocus = focusManager.updateCurrentFocusByDirection(directionStatus)
+        const focusHistory = focusManager.updateFocusHistoryFocusItemStates(currentFocus);
+        dispatch(setFocusedItem(currentFocus, focusHistory));
+        
+        dispatch(updateFocusingStatus(directionStatus));
+    }
 }
 
 export function rootMounted() {
@@ -39,4 +31,19 @@ export function rootMounted() {
 
 export function focusingHandled() {
     return updateFocusingStatus(focusingStates.HANDLED);
+}
+
+function setFocusedItem(currentFocus, focusHistory) {
+    return {
+        type: actionTypes.FOCUS.SET_FOCUSED_ITEM,
+        currentFocus,
+        focusHistory
+    };
+}
+
+function updateFocusingStatus(focusingStatus) {
+    return {
+        type: actionTypes.FOCUS.UPDATE_FOCUSING_STATUS,
+        focusingStatus,
+    };
 }

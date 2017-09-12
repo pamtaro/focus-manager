@@ -19,7 +19,7 @@ function withFocusRoot(WrappedComponent) {
             className: PropTypes.string,
             updateFocusHistory: PropTypes.func.isRequired,
             rootMounted: PropTypes.func.isRequired,
-            updateFocusingStatus: PropTypes.func.isRequired,
+            moveFocus: PropTypes.func.isRequired,
         };        
         
         static contextTypes = {
@@ -54,7 +54,7 @@ function withFocusRoot(WrappedComponent) {
         }
 
         handleKeyDown(event) {
-            const { updateFocusingStatus } = this.props;
+            const { moveFocus } = this.props;
             const { focusManager } = this.context;
 
             // throttle key down handler so animations don't get out of sync with key handling
@@ -64,7 +64,7 @@ function withFocusRoot(WrappedComponent) {
                 const focusingStatus = focusManager.getFocusDirectionalStatus(event.which);
                 if (focusingStatus) {
                     handled = true;
-                    updateFocusingStatus(focusingStatus);
+                    moveFocus(focusManager, focusingStatus);
                 }
     
                 if (handled) {

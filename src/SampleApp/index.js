@@ -41,6 +41,7 @@ class App extends Component {
       type: focusableTypes.ROOT,
       path: 'index',
       index: 0,
+      rootGridDirection: focusableTypes.GRID.VERTICAL,
       className: 'sample-focus-root',
       childCount,
     }
