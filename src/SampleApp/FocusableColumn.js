@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import FocusableItem from './FocusableItem';
 import withFocusGrid from '../FocusManager/withFocusGrid';
-import { focusableTypes, focusItemStates, focusingStates } from '../FocusManager/types';
+import { focusableTypes, focusableStates, focusingStates } from '../FocusManager/types';
 
 class FocusableColumn extends Component {  
     componentWillReceiveProps(nextProps) {

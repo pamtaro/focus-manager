@@ -1,7 +1,8 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import { focusableTypes } from '../types';
+import { focusableTypes, focusingStates } from '../types';
 import container from './Container';
 
 function withFocusRoot(WrappedComponent) {
@@ -12,12 +13,14 @@ function withFocusRoot(WrappedComponent) {
         };
 
         static propTypes = {
+            id: PropTypes.string.isRequired,
             index: PropTypes.number.isRequired,
-            type: PropTypes.string.isRequired,      
-            path: PropTypes.string,
+            type: PropTypes.string.isRequired,  
             rootGridDirection: PropTypes.string.isRequired,
+            focusingStatus: PropTypes.string,
             className: PropTypes.string,
             updateFocusHistory: PropTypes.func.isRequired,
+            setCurrentFocusRoot: PropTypes.func.isRequired,
             rootMounted: PropTypes.func.isRequired,
             moveFocus: PropTypes.func.isRequired,
         };        
@@ -34,11 +37,13 @@ function withFocusRoot(WrappedComponent) {
         }
 
         componentDidMount() {    
-            const { rootMounted } = this.props;
+            const { rootMounted, id, setCurrentFocusRoot } = this.props;
+            const { focusManager } = this.context;
             
             // manually handle focusing by listening for key events
             window.addEventListener('keydown', this.handleKeyDown);
 
+            setCurrentFocusRoot(id, focusManager);
             this.updateFocusRootHistory();
             rootMounted();
         }

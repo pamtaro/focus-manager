@@ -1,5 +1,12 @@
 import { actionTypes, focusingStates } from './types';
-import { normalizeTree } from './helpers';
+
+export function setCurrentFocusRoot(id, focusManager) {
+    const focusHistory = focusManager.setCurrentFocusRoot(id);
+    return {
+        type: actionTypes.FOCUS.SET_CURRENT_FOCUS_ROOT,
+        id
+    }
+}
 
 export function updateFocusHistory(focusManager) {    
     const focusHistory = focusManager.getFocusHistory();
@@ -10,16 +17,16 @@ export function updateFocusHistory(focusManager) {
 }
 
 export function setFocusedItemFromComponent(focusManager, focusedItem) {
-    const currentFocus = focusManager.setCurrentFocusFromComponent(focusedItem);
-    const focusHistory = focusManager.updateFocusHistoryFocusItemStates(currentFocus);
-    return setFocusedItem(currentFocus, focusHistory);
+    const currentFocusItem = focusManager.setCurrentFocusItem(focusedItem);
+    const focusHistory = focusManager.getFocusHistory();
+    return setFocusedItem(currentFocusItem, focusHistory);
 }
 
 export function moveFocus(focusManager, directionStatus) {
     return (dispatch) => {        
-        const currentFocus = focusManager.updateCurrentFocusByDirection(directionStatus)
-        const focusHistory = focusManager.updateFocusHistoryFocusItemStates(currentFocus);
-        dispatch(setFocusedItem(currentFocus, focusHistory));
+        const currentFocusItem = focusManager.updateCurrentFocusItemByDirection(directionStatus)
+        const focusHistory = focusManager.getFocusHistory();
+        dispatch(setFocusedItem(currentFocusItem, focusHistory));
         
         dispatch(updateFocusingStatus(directionStatus));
     }
@@ -33,10 +40,10 @@ export function focusingHandled() {
     return updateFocusingStatus(focusingStates.HANDLED);
 }
 
-function setFocusedItem(currentFocus, focusHistory) {
+function setFocusedItem(currentFocusItem, focusHistory) {
     return {
         type: actionTypes.FOCUS.SET_FOCUSED_ITEM,
-        currentFocus,
+        currentFocusItem,
         focusHistory
     };
 }

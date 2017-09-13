@@ -11,6 +11,7 @@ function withFocusGrid(WrappedComponent) {
         };
 
         static propTypes = {
+            id: PropTypes.string,
             index: PropTypes.number.isRequired,
             type: PropTypes.string.isRequired,
             focusableParent: PropTypes.object.isRequired,
@@ -25,9 +26,15 @@ function withFocusGrid(WrappedComponent) {
         
         constructor(props, context){
             super(props, context);
+            const { focusableParent, id, index } = props;
 
             this.updateFocusGridHistory = this.updateFocusGridHistory.bind(this);
             this.setFocus = this.setFocus.bind(this);
+
+            // if an id wasn't passed into the component's props, use the formatted id that prepends the parent's id
+            // with this item's index to keep the current item component unique            
+            let formattedId = id || `${focusableParent.id}_g#${index}`;
+            this.state = { id: formattedId };
         }
 
         setFocus(focusedItem) {
@@ -43,7 +50,8 @@ function withFocusGrid(WrappedComponent) {
         }
 
         render() {  
-            return (<WrappedComponent { ...this.context } { ...this.props } 
+            return (<WrappedComponent { ...this.context } { ...this.props }
+                id={this.state.id} 
                 updateFocusGridHistory={this.updateFocusGridHistory}
                 setFocus={this.setFocus}
                 />);

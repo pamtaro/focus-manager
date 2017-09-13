@@ -1,19 +1,25 @@
 import { actionTypes, focusableTypes } from './types';
 
 const defaultState = {
-    focusHistory: []
+    focusHistory: {}
 };
 
 export default (state = defaultState, action) => {
     switch (action.type) {
-        
-        case actionTypes.FOCUS.SET_FOCUSED_ITEM: {
-            const { currentFocus, focusHistory } = action;
+
+        case actionTypes.FOCUS.SET_CURRENT_FOCUS_ROOT:
             return {
                 ...state,
-                currentFocus,
+                currentFocusRoot: action.id,
+            };
+        
+        case actionTypes.FOCUS.SET_FOCUSED_ITEM: {
+            const { currentFocusItem, focusHistory } = action;
+            return {
+                ...state,
+                currentFocusItem,
                 focusHistory,
-            }
+            };
         }
 
         case actionTypes.FOCUS.UPDATE_HISTORY: {
@@ -23,7 +29,7 @@ export default (state = defaultState, action) => {
 
         case actionTypes.FOCUS.UPDATE_FOCUSING_STATUS: {
             const { focusingStatus } = action;
-            return { ...state, focusingStatus }
+            return { ...state, focusingStatus };
         }
 
         default:
