@@ -1,5 +1,16 @@
 import { focusableTypes, focusingStates, focusItemStates  } from './types';
 
+// This method automatically returns the first child nodes available in the tree to construct the default focus
+export function buildDefaultCurrentFocusTree(currentNode) {
+    const filteredNode = filterFocusableProperties(currentNode);
+    if (filteredNode.focusableChildren && filteredNode.focusableChildren.length > 0) {     
+        const firstChild = buildDefaultCurrentFocusTree(filteredNode.focusableChildren[0]);   
+        filteredNode.focusableChildren = [ firstChild ];
+        return filteredNode;
+    }
+    return filteredNode;
+}
+
 // This method is called recursively to update the a tree from the top level down to the focusableChildren nodes
 // In practice, this starts with the ROOT node of the focusHistory array and drills down into GRIDs and ITEMs,
 // adding any missing child objects in the source tree 
@@ -24,15 +35,16 @@ export function buildTree(sourceTreeArray, updateTree) {
     return sourceTreeArray;
 }
 
-// This method filters for the whitelisted properties for bottom-up tree (child referencing parent)
-export function filterFocusableWithParent(focusable) {
-    // create a filtered copy of the focusable
-    const focusableCopy = filterFocusableProperties(focusable);
-    if (focusableCopy.focusableParent) {
-        const filteredParent = filterFocusableWithParent(focusableCopy.focusableParent);
-        focusableCopy.focusableParent = filteredParent;
-    } 
-    return focusableCopy;
+// This method filters properties from the focusable object so we only have properties relevant for the focus history
+export function filterFocusableProperties(focusable) {
+    const whiteListedProps = ['type', 'index', 'path', 'focusableParent', 'focusableChildren', 'rootGridDirection', 'focusedStatus'];
+    const newFocusable = whiteListedProps.reduce((newObj, wlProp) => {
+        if (focusable.hasOwnProperty(wlProp)) {
+            newObj[wlProp] = focusable[wlProp];
+        }
+        return newObj;
+    }, {});
+    return newFocusable;
 }
 
 // This method gets called recursively to return the bottom-most child node
@@ -146,16 +158,4 @@ function calculateNextIndex(currentIndex, direction) {
     // should increment index if the focusing direction is down or right
     const incrementIndex = direction === focusingStates.DOWN || direction === focusingStates.RIGHT; 
     return currentIndex + (incrementIndex ? 1 : -1);
-}
-
-// This method filters properties from the focusable object so we only have properties relevant for the focus history
-function filterFocusableProperties(focusable) {
-    const whiteListedProps = ['type', 'index', 'path', 'focusableParent', 'focusableChildren', 'rootGridDirection', 'focusedStatus'];
-    const newFocusable = whiteListedProps.reduce((newObj, wlProp) => {
-        if (focusable.hasOwnProperty(wlProp)) {
-            newObj[wlProp] = focusable[wlProp];
-        }
-        return newObj;
-    }, {});
-    return newFocusable;
 }

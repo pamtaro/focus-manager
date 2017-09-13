@@ -11,7 +11,7 @@ class FocusableRow extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = { childCount: 3 };
+    this.state = { childCount: 20 };
     this.clickHandler = this.clickHandler.bind(this);
   }
   
@@ -44,7 +44,7 @@ class FocusableRow extends Component {
                 index: i,  
                 focusableParent: this.props
             }
-            return (index % 2 === 0 ? <FocusableColumn key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL }} />
+            return (false ? <FocusableColumn key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL }} />
                 : <FocusableItem key={i} { ...innerProps } />);
         })}
       </div>

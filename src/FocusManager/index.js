@@ -1,5 +1,6 @@
 import { focusableTypes, focusingStates } from './types';
-import { buildTree, getChildNode, normalizeTree, updateCurrentFocusByHistoryAndDirection, updateFocusItemsFocusedStatus } from './helpers';
+import { buildDefaultCurrentFocusTree, buildTree, filterFocusableProperties, getChildNode, normalizeTree,
+    updateCurrentFocusByHistoryAndDirection, updateFocusItemsFocusedStatus } from './helpers';
 
 export class FocusManager {
     constructor (keyHelpers, transitionDuration) {
@@ -17,7 +18,7 @@ export class FocusManager {
     updateCurrentFocusByDirection(focusDirection) {
         if (!this.currentFocus && this.focusHistory) {
             // if currentFocus has not been prevously set, return the first Focus ITEM for the last ROOT in the focusHistory
-            this.currentFocus = this.getFirstChildInHistory();
+            this.currentFocus = buildDefaultCurrentFocusTree(this.focusHistory[this.focusHistory.length-1]); 
         } else {
             const result = updateCurrentFocusByHistoryAndDirection(this.focusHistory, this.currentFocus, focusDirection);
             this.currentFocus = result.focusedChildNode;
@@ -27,16 +28,6 @@ export class FocusManager {
 
     getCurrentFocus() {
         return this.currentFocus;
-    }
-
-    getFirstChildInHistory() {
-        // assuming that the last item in the history is the current page
-        let currentFocusRoot = this.focusHistory[this.focusHistory.length]; 
-        let childNode = currentFocusRoot.focusableChildren[0];
-        while (childNode.focusableChildren && childNode.focusableChildren.length > 0) {
-            childNode = childNode.focusableChildren[0];
-        }
-        return childNode;
     }
 
     getFocusDirectionalStatus(keyCode) {

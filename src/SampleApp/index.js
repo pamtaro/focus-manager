@@ -19,10 +19,10 @@ class App extends Component {
     super(props, context);
 
     this.childContext = {
-      focusManager: new FocusManager(keyHelpers, 0.2)
+      focusManager: new FocusManager(keyHelpers, 0.1)
     };
 
-    this.state = { childCount: 3 };
+    this.state = { childCount: 20 };
     this.clickHandler = this.clickHandler.bind(this);
   }
   
@@ -46,7 +46,7 @@ class App extends Component {
       childCount,
     }
     return (
-      <div className="App">
+      <div>
         <a onClick={this.clickHandler}>Add Row</a>
         <FocusableRoot {...rootProps}>
           {[...Array(childCount)].map((x, i) => {
