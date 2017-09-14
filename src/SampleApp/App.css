@@ -3,8 +3,8 @@
   flex-direction: row;
   background: #AA3800;
   color: white;
-  margin: 1vh;
-  padding: 1vh;
+  margin: 0.5vh;
+  padding: 0.5vh;
 }
 
 .inner-grid {
@@ -13,9 +13,9 @@
   flex: 1 0 auto;
   background: #BF9620;
   color: white;
-  margin: 1vh;
-  padding: 1vh;
-  width: 49vh;
+  margin: 0.5vh;
+  padding: 0.5vh;
+  /* width: 49vh; */
 }
 
 .focus-item {
@@ -23,9 +23,9 @@
   flex: 1 0 auto;
   background: #237CA1;
   color: white;
-  margin: 1vh;
-  padding: 1vh;
-  width: 45vh;
+  margin: 0.5vh;
+  padding: 0.5vh;
+  /* width: 45vh; */
 }
 
 .focus-status-active {
@@ -41,7 +41,8 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-  background-color: #bbaa00
+  background-color: #bbaa00;
+  overflow: hidden;
 }
 
 a {
