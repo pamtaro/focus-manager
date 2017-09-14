@@ -81,6 +81,23 @@ export function normalizeTree(focusable) {
     }
 }  
 
+export function findActiveFocusable(sourceTreeArray) {
+    let activeNode = sourceTreeArray[0]; // default to first node in the array
+    for (let i = 0; i < sourceTreeArray.length; i++) {
+        const sourceNode = sourceTreeArray[i];
+        if (sourceNode.type !== focusableTypes.ITEM) {
+            activeNode = findActiveFocusable(sourceNode.focusableChildren);
+            if (activeNode) {
+                break;
+            }
+        } else if (sourceNode.focusedStatus === focusItemStates.ACTIVE) {
+            activeNode = sourceNode;
+            break;
+        } 
+    }
+    return activeNode;
+}
+
 // This method traverses the source array and focus tree node (starting with the focusHistory and the currentFocus)
 // it calls recursively until it reaches the bottom of the tree (the focus item), then will set a flag to indicate that as the method
 // returns and walks back up the tree, it should use the current parent/child node to calculate the next item to set as the focused item
@@ -102,8 +119,19 @@ export function updateCurrentFocusByHistoryAndDirection(sourceTreeArray, focused
                     // OR the resulting move would make the index out of bounds, so pass along operation to next parent level
                     nextParentShouldUpdate = true;
                 } else {
-                    // the next index move is valid, so update the focusedTreeNode
-                    focusedChildNode.index = nextChildIndex;
+                    // the next index move is valid, so update the node
+                    const updatedChildNode = {
+                        ...focusedChildNode,
+                        index: nextChildIndex,
+                    };
+                    const existingFocusedNode = existingTreeNode.focusableChildren
+                        .find(node => node.index === nextChildIndex && node.type === updatedChildNode.type);
+                    if (existingFocusedNode.focusableChildren) {
+                        const activeChildren = findActiveFocusable(existingFocusedNode.focusableChildren);
+                        updatedChildNode.focusableChildren = [activeChildren];
+                    }
+                    // appended the updated node to the focusedTreeNode
+                    focusedTreeNode.focusableChildren[0] = updatedChildNode;
                 }
             } 
         } else {

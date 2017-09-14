@@ -35,9 +35,7 @@ class FocusableRow extends Component {
     return (
       <div className={`outer-grid ${className}`}>
         <div>
-          <a onClick={this.clickHandler}>Add Child</a>
-          <br/>
-          <h4>Outer Grid {index}</h4>
+          <a onClick={this.clickHandler}>Grid{index} +</a>
         </div>
         {[...Array(childCount)].map((x, i) => {            
             const innerProps = {

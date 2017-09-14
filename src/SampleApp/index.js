@@ -44,7 +44,7 @@ class App extends Component {
       rootGridDirection: focusableTypes.GRID.VERTICAL,
       className: 'sample-focus-root',
       childCount,
-    }
+    };
     return (
       <div>
         <a onClick={this.clickHandler}>Add Row</a>

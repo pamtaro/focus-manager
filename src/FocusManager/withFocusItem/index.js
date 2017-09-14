@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import { focusableTypes, focusItemStates } from '../types';
@@ -46,12 +47,16 @@ function withFocusItem(WrappedComponent) {
             const { focusingHandled } = this.props;
             const { focusedStatus, previousStatus } = this.state;
             if (focusedStatus === focusItemStates.FOCUSED && previousStatus !== focusItemStates.FOCUSED) {
+                const node = ReactDOM.findDOMNode(this);
+                node.focus();
                 focusingHandled();
             }
         }
 
         render() {  
-            return (<WrappedComponent { ...this.context } { ...this.props } focusedStatus={this.state.focusedStatus} />);
+            return (<div className="focus-item-wrapper" tabIndex="0">
+                    <WrappedComponent { ...this.context } { ...this.props } focusedStatus={this.state.focusedStatus} />
+                </div>);
         }
     };
 }
