@@ -8,24 +8,6 @@ export class FocusManager {
         this.transitionDuration = transitionDuration;
     }
 
-    isAnyDirectionalKey = (keyCode) => this.keyHelpers.isAnyDirectionalKey(keyCode);
-    isUpKey = (keyCode) => this.keyHelpers.isUpKey(keyCode);
-    isDownKey = (keyCode) => this.keyHelpers.isDownKey(keyCode);
-    isLeftKey = (keyCode) => this.keyHelpers.isLeftKey(keyCode);
-    isRightKey = (keyCode) => this.keyHelpers.isRightKey(keyCode);
-    isSelectKey = (keyCode) => this.keyHelpers.isSelectKey(keyCode);
-
-    updateCurrentFocusByDirection(focusDirection) {
-        if (!this.currentFocus && this.focusHistory) {
-            // if currentFocus has not been prevously set, return the first Focus ITEM for the last ROOT in the focusHistory
-            this.currentFocus = buildDefaultCurrentFocusTree(this.focusHistory[this.focusHistory.length-1]); 
-        } else {
-            const result = updateCurrentFocusByHistoryAndDirection(this.focusHistory, this.currentFocus, focusDirection);
-            this.currentFocus = result.focusedChildNode;
-        }
-        return this.currentFocus;        
-    }
-
     getCurrentFocus() {
         return this.currentFocus;
     }
@@ -59,6 +41,13 @@ export class FocusManager {
     getTransitionDuration() {
         return this.transitionDuration;
     }
+    
+    isAnyDirectionalKey = (keyCode) => this.keyHelpers.isAnyDirectionalKey(keyCode);
+    isUpKey = (keyCode) => this.keyHelpers.isUpKey(keyCode);
+    isDownKey = (keyCode) => this.keyHelpers.isDownKey(keyCode);
+    isLeftKey = (keyCode) => this.keyHelpers.isLeftKey(keyCode);
+    isRightKey = (keyCode) => this.keyHelpers.isRightKey(keyCode);
+    isSelectKey = (keyCode) => this.keyHelpers.isSelectKey(keyCode);
 
     registerFocusable(focusable, focusHistory = this.focusHistory) {
         const normalizedFocusTree = normalizeTree(focusable);
@@ -75,6 +64,17 @@ export class FocusManager {
         }
         this.currentFocus = normalizeTree(focusedItem);
         return this.currentFocus;
+    }
+
+    updateCurrentFocusByDirection(focusDirection) {
+        if (!this.currentFocus && this.focusHistory) {
+            // if currentFocus has not been prevously set, return the first Focus ITEM for the last ROOT in the focusHistory
+            this.currentFocus = buildDefaultCurrentFocusTree(this.focusHistory[this.focusHistory.length-1]); 
+        } else {
+            const result = updateCurrentFocusByHistoryAndDirection(this.focusHistory, this.currentFocus, focusDirection);
+            this.currentFocus = result.focusedChildNode;
+        }
+        return this.currentFocus;        
     }
 
     updateFocusHistoryFocusItemStates(currentFocusItem = this.currentFocusItem, focusHistory = this.focusHistory) {

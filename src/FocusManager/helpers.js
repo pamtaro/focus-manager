@@ -128,8 +128,11 @@ export function updateFocusItemsFocusedStatus(children, focusedItemTree) {
         if (child.type === focusableTypes.ITEM) {
             if (!focusedItemTree) {
                 // this child item was not part of the same tree as the intended focus child
-                // check if this node's status was previously set to FOCUSED, if so change it to ACTIVE, otherwise mark as DEFAULT
-                child.focusedStatus = child.focusedStatus === focusItemStates.FOCUSED ? focusItemStates.ACTIVE : focusItemStates.DEFAULT;
+                // check if this node's status was previously set to FOCUSED OR ACTIVE, if so change it to ACTIVE, otherwise mark as DEFAULT
+                child.focusedStatus = (child.focusedStatus === focusItemStates.FOCUSED
+                    || child.focusedStatus === focusItemStates.ACTIVE) 
+                        ? focusItemStates.ACTIVE 
+                        : focusItemStates.DEFAULT;
             } else {
                 // if this child item is in the same row as the intended focus child,
                 // then mark the focus child node as FOCUSED, but other child items as DEFAULT
