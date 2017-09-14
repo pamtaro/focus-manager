@@ -18,13 +18,13 @@ class App extends Component {
   constructor(props, context) {
     super(props, context);
 
-    const focusManager = new FocusManager(keyHelpers, 0.1);
+    const focusManager = new FocusManager(keyHelpers, 0.01);
 
     this.childContext = { focusManager };
 
-    const currentFocusRoot = focusManager.getNextFocusRootId('/index');
+    const currentFocusRootId = focusManager.getNextFocusRootId('/index');
 
-    this.state = { childCount: 20, currentFocusRoot };
+    this.state = { childCount: 20, currentFocusRootId };
     this.clickHandler = this.clickHandler.bind(this);
   }
   
@@ -39,11 +39,11 @@ class App extends Component {
 
   render() {  
     const { childCount } = this.state;
-    const { currentFocusRoot } = this.state;
+    const { currentFocusRootId } = this.state;
 
     const rootProps = {
       type: focusableTypes.ROOT,
-      id: currentFocusRoot, 
+      id: currentFocusRootId, 
       index: 0,
       rootGridDirection: focusableTypes.GRID.VERTICAL,
       className: 'sample-focus-root',
@@ -57,7 +57,7 @@ class App extends Component {
             index: i,
             focusableParent: rootProps
           }
-          return (<FocusableRow key={i} {...outerProps} />);
+          return (<FocusableRow key={i} {...outerProps} childCount={childCount} />);
         })}
       </FocusableRoot>
     );

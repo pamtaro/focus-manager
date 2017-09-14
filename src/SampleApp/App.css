@@ -18,9 +18,22 @@
   /* width: 49vh; */
 }
 
+.third-level-grid {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 auto;
+  background: #AED38D;
+  color: white;
+  margin: 0.5vh;
+  padding: 0.5vh;
+}
+
+.focus-item-wrapper {
+  flex: 1 0 auto;
+}
+
 .focus-item {
   border: 2px solid transparent;
-  flex: 1 0 auto;
   background: #237CA1;
   color: white;
   margin: 0.5vh;

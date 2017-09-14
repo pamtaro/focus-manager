@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import FocusableItem from './FocusableItem';
+import FocusableRowInsideColumn from './FocusableRowInsideColumn';
 import withFocusGrid from '../FocusManager/withFocusGrid';
-import { focusableTypes, focusableStates, focusingStates } from '../FocusManager/types';
+import { focusableTypes, focusingStates } from '../FocusManager/types';
 
 class FocusableColumn extends Component {  
     componentWillReceiveProps(nextProps) {
@@ -24,18 +24,17 @@ class FocusableColumn extends Component {
     }
 
     render() {
-        const { className, index } = this.props;
+        const { className, index, focusableParent} = this.props;
         return (
         <div className={`inner-grid ${className}`}>
             <h4>Inner Grid {index}</h4>
-                {[...Array(2)].map((x, i) => {    
+                {[...Array(3)].map((x, i) => {    
                     const innerProps = {
                         index: i,    
                         focusableParent: this.props,
                     }
-                    return (<FocusableItem key={i} { ...innerProps }>
-                        <h4>Item {i}</h4>
-                    </FocusableItem>);
+                    return (focusableParent.index === 2 ? <FocusableRowInsideColumn key={i} { ...innerProps } /> :
+                        <FocusableItem key={i} { ...innerProps } />);
                 })}
         </div>
         );

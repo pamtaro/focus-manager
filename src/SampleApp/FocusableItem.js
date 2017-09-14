@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import withFocusItem from '../FocusManager/withFocusItem';
 
 class FocusableItem extends Component {    

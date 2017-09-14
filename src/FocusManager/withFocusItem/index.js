@@ -13,12 +13,20 @@ function withFocusItem(WrappedComponent) {
         };
 
         static propTypes = {
+            // props just for component
+            className: PropTypes.string,
+            focusableParent: PropTypes.object.isRequired,
+            
+            // props included in focusHistory
             id: PropTypes.string,
             index: PropTypes.number.isRequired,
             type: PropTypes.string.isRequired,
-            focusableParent: PropTypes.object.isRequired,
-            className: PropTypes.string,
+            
+            // props from redux state
             focusHistory: PropTypes.object,
+            focusingStatus: PropTypes.string,
+
+            // props from redux dispatch
             focusingHandled: PropTypes.func.isRequired,
         };      
 
@@ -31,7 +39,7 @@ function withFocusItem(WrappedComponent) {
             const { focusableParent, id, index } = props;
             
             // if an id wasn't passed into the component's props, use the formatted id that prepends the parent's id
-            // with this item's index to keep the current item component unique            
+            // with '_i#' and this item's index to keep the current item component unique            
             let formattedId = id || `${focusableParent.id}_i#${index}`;
             this.state = { focusedStatus: props.focusedStatus, id: formattedId };
         }

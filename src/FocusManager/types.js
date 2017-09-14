@@ -1,25 +1,25 @@
 
 export const actionTypes = {
     FOCUS: {
-        UPDATE_HISTORY: 'FOCUS.UPDATE_HISTORY',
         SET_CURRENT_FOCUS_ROOT: 'FOCUS.SET_CURRENT_FOCUS_ROOT',
         SET_FOCUSED_ITEM: 'FOCUS.SET_FOCUSED_ITEM',
         UPDATE_FOCUSING_STATUS: 'FOCUS.UPDATE_FOCUSING_STATUS',
+        UPDATE_HISTORY: 'FOCUS.UPDATE_HISTORY',
     },
 };
 
 export const focusableTypes = {
-    ROOT: 'ROOT',
     GRID: {
         HORIZONTAL: 'GRID.HORIZONTAL',
         VERTICAL: 'GRID.VERTICAL',
     },
     ITEM: 'ITEM',
+    ROOT: 'ROOT',
 };
 
 export const focusableStates = {
-    DEFAULT: 'DEFAULT', // DEFAULT is not focused AND not active
     ACTIVE: 'ACTIVE', // ACTIVE is when the item IS NOT currently focused, BUT will be if focus returns to it's parent GRID
+    DEFAULT: 'DEFAULT', // DEFAULT is not focused AND not active
     FOCUSED: 'FOCUSED', // FOCUSED is when the item is currently focused
 };
 

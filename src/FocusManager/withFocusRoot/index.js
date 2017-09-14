@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import { focusableTypes, focusingStates } from '../types';
+import { focusableTypes } from '../types';
 import container from './Container';
 
 function withFocusRoot(WrappedComponent) {
@@ -13,15 +12,24 @@ function withFocusRoot(WrappedComponent) {
         };
 
         static propTypes = {
+            // props just for component
+            className: PropTypes.string,
+
+            // props included in focusHistory
+            activeChildId: PropTypes.string,
             id: PropTypes.string.isRequired,
             index: PropTypes.number.isRequired,
-            type: PropTypes.string.isRequired,  
             rootGridDirection: PropTypes.string.isRequired,
+            type: PropTypes.string.isRequired,  
+
+            // props from redux state
+            focusHistory: PropTypes.object,
             focusingStatus: PropTypes.string,
-            className: PropTypes.string,
+
+            // props from redux dispatch
             updateFocusHistory: PropTypes.func.isRequired,
-            setCurrentFocusRoot: PropTypes.func.isRequired,
             rootMounted: PropTypes.func.isRequired,
+            setCurrentFocusRootId: PropTypes.func.isRequired,
             moveFocus: PropTypes.func.isRequired,
         };        
         
@@ -37,13 +45,13 @@ function withFocusRoot(WrappedComponent) {
         }
 
         componentDidMount() {    
-            const { rootMounted, id, setCurrentFocusRoot } = this.props;
+            const { rootMounted, id, setCurrentFocusRootId } = this.props;
             const { focusManager } = this.context;
             
             // manually handle focusing by listening for key events
             window.addEventListener('keydown', this.handleKeyDown);
 
-            setCurrentFocusRoot(id, focusManager);
+            setCurrentFocusRootId(id, focusManager);
             this.updateFocusRootHistory();
             rootMounted();
         }

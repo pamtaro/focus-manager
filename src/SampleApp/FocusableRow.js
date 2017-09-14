@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 
 import FocusableItem from './FocusableItem';
 import FocusableColumn from './FocusableColumn';
@@ -11,7 +10,7 @@ class FocusableRow extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = { childCount: 20 };
+    this.state = { childCount: props.childCount };
     this.clickHandler = this.clickHandler.bind(this);
   }
   
@@ -42,7 +41,8 @@ class FocusableRow extends Component {
                 index: i,  
                 focusableParent: this.props
             }
-            return (false ? <FocusableColumn key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL }} />
+            return (index === 1 || index === 2 ? 
+                <FocusableColumn key={i} {...{...innerProps, type: focusableTypes.GRID.VERTICAL, useSiblingActiveChildIndex: true }} />
                 : <FocusableItem key={i} { ...innerProps } />);
         })}
       </div>

@@ -15,12 +15,12 @@ export class FocusManager {
         return currentIndex + (incrementIndex ? 1 : -1);
     }
 
-    getCurrentFocusItem() {
-        return this.currentFocusItem;
+    getCurrentFocusItemId() {
+        return this.currentFocusItemId;
     }
 
-    getCurrentFocusRoot() {
-        return this.currentFocusRoot;
+    getCurrentFocusRootId() {
+        return this.currentFocusRootId;
     }
 
     getFocusHistory() {
@@ -45,13 +45,19 @@ export class FocusManager {
         const item = focusHistory[id];
         return item ? item.focusedStatus : focusableStates.DEFAULT;
     }
+    
+    getNextFocusRootId(path, focusHistory = this.focusHistory) {
+        const focusRootRegExp = new RegExp(`^${path}#(\\d)+$`)
+        const existingRootsCount = Object.keys(focusHistory).filter(key => focusRootRegExp.test(key)).length;
+        return `${path}#${existingRootsCount}`;
+    }
 
     getTransitionDuration() {
         return this.transitionDuration;
     }
     
     filterFocusableProperties(focusable) {
-        const whiteListedProps = ['id', 'type', 'focusableChildIds', 'focusableParentId', 'rootGridDirection', 'focusedStatus'];
+        const whiteListedProps = ['id', 'type', 'focusableChildIds', 'focusableParentId', 'focusedStatus', 'rootGridDirection', 'useSiblingActiveChildIndex'];
         const newFocusable = whiteListedProps.reduce((newObj, wlProp) => {
             if (focusable.hasOwnProperty(wlProp)) {
                 newObj[wlProp] = focusable[wlProp];
@@ -71,12 +77,6 @@ export class FocusManager {
     isLeftKey = (keyCode) => this.keyHelpers.isLeftKey(keyCode);
     isRightKey = (keyCode) => this.keyHelpers.isRightKey(keyCode);
     isSelectKey = (keyCode) => this.keyHelpers.isSelectKey(keyCode);
-
-    getNextFocusRootId(path, focusHistory = this.focusHistory) {
-        const focusRootRegExp = new RegExp(`^${path}#(\\d)+$`)
-        const existingRootsCount = Object.keys(focusHistory).filter(key => focusRootRegExp.test(key)).length;
-        return `${path}#${existingRootsCount}`;
-    }
     
     registerFocusable(focusable, focusHistory = this.focusHistory) {        
         // create a filtered copy of the focusable
@@ -95,8 +95,15 @@ export class FocusManager {
     setCurrentFocusItem(currentFocusItem) {
         const normalizedItem = this.filterFocusableProperties(currentFocusItem);
 
+        // check if other children for this item's parent have entries in the focusHistory, if so, remove them
+        this.focusHistory[normalizedItem.focusableParentId].focusableChildIds.forEach(childId => {
+            if (childId !== normalizedItem.id && this.focusHistory[childId]) {
+                delete this.focusHistory[childId];
+            }
+        });
+
         // update the previous focus item to mark it as ACTIVE or remove it from history
-        const prevFocusItem = this.focusHistory[this.currentFocusItem];
+        const prevFocusItem = this.focusHistory[this.currentFocusItemId];
         if (prevFocusItem) {
             if (prevFocusItem.focusableParentId === normalizedItem.focusableParentId) {
                 // if the previous focus item was in the same parent as the current, remove it from history
@@ -120,11 +127,11 @@ export class FocusManager {
 
         // save the new current focus item
         this.focusHistory[normalizedItem.id] = normalizedItem;        
-        this.currentFocusItem = currentFocusItem.id;
+        this.currentFocusItemId = currentFocusItem.id;
     }
 
-    setCurrentFocusRoot(currentFocusRoot) {
-        this.currentFocusRoot = currentFocusRoot;
+    setCurrentFocusRootId(currentFocusRootId) {
+        this.currentFocusRootId = currentFocusRootId;
     }
 
     setFocusHistory(focusHistory) {
@@ -132,10 +139,10 @@ export class FocusManager {
     }
 
     updateCurrentFocusItemByDirection(focusDirection) {
-        if (!this.currentFocusItem && this.focusHistory && this.currentFocusRoot) {
+        if (!this.currentFocusItemId && this.focusHistory && this.currentFocusRootId) {
             // if currentFocus has not been prevously set, return the first Focus ITEM 
             // by getting the first child starting with the the root
-            let firstChildId = this.currentFocusRoot;
+            let firstChildId = this.currentFocusRootId;
             let lookupNode;
             let parentNodeId;
             while ((lookupNode = this.focusHistory[firstChildId]) && lookupNode && lookupNode.focusableChildIds) {
@@ -151,16 +158,15 @@ export class FocusManager {
         } else {
             this.updateCurrentFocusItemByHistoryAndDirection(focusDirection);
         }
-        return this.currentFocusItem;        
+        return this.currentFocusItemId;        
     }
 
-    updateCurrentFocusItemByHistoryAndDirection(focusDirection, currentId = this.currentFocusItem, focusHistory = this.focusHistory) {            
-        //let nextParentShouldUpdate = false;
+    updateCurrentFocusItemByHistoryAndDirection(focusDirection, currentId = this.currentFocusItemId, focusHistory = this.focusHistory) { 
         const existingNode = focusHistory[currentId];
         if (existingNode.focusableParentId) {
             const parentNode = focusHistory[existingNode.focusableParentId]
             if (parentNode) {
-                const currentChildIndex = parentNode.focusableChildIds.findIndex(ids => ids === currentId);
+                const currentChildIndex = parentNode.focusableChildIds.findIndex(childId => childId === currentId);
                 const nextChildIndex = this.calculateNextIndex(currentChildIndex, focusDirection); 
                 const isNextIndexOutOfBounds = nextChildIndex < 0 || nextChildIndex >= parentNode.focusableChildIds.length;
                 const isFocusDirectionVertical = focusDirection === focusingStates.DOWN || focusDirection === focusingStates.UP;
@@ -171,36 +177,47 @@ export class FocusManager {
                     this.updateCurrentFocusItemByHistoryAndDirection(focusDirection, parentNode.id)
                 } else {
                     // the next index move is valid, so construct the appropriate item object
-                    let nextFocusableId = parentNode.focusableChildIds[nextChildIndex];     
-                    let parentNodeId = parentNode.id;
-                    let done = false;
-                    let tries = 0;
-                    const maxTries = 10;
-                    while(!done || tries >= maxTries) {
-                        const nextFocusableNode = this.focusHistory[nextFocusableId];
-                        if (!nextFocusableNode) {
-                            // if node doesnt exist yet in the history, create it as a new ITEM
-                            const newFocusNode = {
-                                id: nextFocusableId,
-                                type: focusableTypes.ITEM,
-                                focusableParentId: parentNodeId,
-                            };
-                            this.setCurrentFocusItem(newFocusNode);            
-                            done = true;                
-                        } else if (nextFocusableNode.type === focusableTypes.ITEM) {
-                            // if this ITEM is already in the history, then pass this exiting node to set as the current focus
-                            this.setCurrentFocusItem(nextFocusableNode)
-                            done = true;
-                        } else {
-                            // if this is not an ITEM node, use it's activeChildId to lookup the next node; default to first child id
-                            nextFocusableId = nextFocusableNode.activeChildId || nextFocusableNode.focusableChildIds[0];
-                            parentNodeId = nextFocusableNode.id;
-                            tries++; // increment tries so we don't get stuck in a loop
-                        }
-                    }           
+                    this.updateCurrentFocusItemWithNextIndex(nextChildIndex, parentNode, existingNode);
                 }
             }
         }
+    }
+
+    updateCurrentFocusItemWithNextIndex(nextChildIndex, parentNode, previousFocusable) {
+        let nextFocusableId = parentNode.focusableChildIds[nextChildIndex];     
+        let parentNodeId = parentNode.id;
+        let done = false;
+        let tries = 0;
+        const maxTries = 10;
+        while(!done || tries >= maxTries) {
+            const nextFocusableNode = this.focusHistory[nextFocusableId];
+            if (!nextFocusableNode) {
+                // if node doesnt exist yet in the history, create it as a new ITEM
+                const newFocusNode = {
+                    id: nextFocusableId,
+                    type: focusableTypes.ITEM,
+                    focusableParentId: parentNodeId,
+                };
+                this.setCurrentFocusItem(newFocusNode);            
+                done = true;                
+            } else if (nextFocusableNode.type === focusableTypes.ITEM) {
+                // if this ITEM is already in the history, then pass this exiting node to set as the current focus
+                this.setCurrentFocusItem(nextFocusableNode)
+                done = true;
+            } else {
+                // if this is not an ITEM node, (1) first check to see if the 'useSiblingActiveChildIndex' flag is set, if not set,
+                // then (2) use it's 'activeChildId' to lookup the next node; otherwise (3) default to first child id
+                if (nextFocusableNode.useSiblingActiveChildIndex && nextFocusableNode.focusableParentId === previousFocusable.focusableParentId) {
+                    const siblingActiveChildIndex = previousFocusable.focusableChildIds.findIndex(childId => childId === previousFocusable.activeChildId);
+                    const nextNodesMaxChildIndex = nextFocusableNode.focusableChildIds.length - 1;
+                    nextFocusableId = nextFocusableNode.focusableChildIds[nextNodesMaxChildIndex > siblingActiveChildIndex ? siblingActiveChildIndex : nextNodesMaxChildIndex];
+                } else {
+                    nextFocusableId = nextFocusableNode.activeChildId || nextFocusableNode.focusableChildIds[0];
+                }
+                parentNodeId = nextFocusableNode.id;
+                tries++; // increment tries so we don't get stuck in a loop
+            }
+        }           
     }
     
     updateFocusHistory(focusable, focusHistory = this.focusHistory) {

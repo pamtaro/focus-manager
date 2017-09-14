@@ -11,11 +11,22 @@ function withFocusGrid(WrappedComponent) {
         };
 
         static propTypes = {
+            // props just for component
+            className: PropTypes.string,
+            focusableParent: PropTypes.object.isRequired,
+
+            // props included in focusHistory     
+            activeChildId: PropTypes.string,
             id: PropTypes.string,
             index: PropTypes.number.isRequired,
-            type: PropTypes.string.isRequired,
-            focusableParent: PropTypes.object.isRequired,
-            className: PropTypes.string,
+            type: PropTypes.string.isRequired,       
+            useSiblingActiveChildIndex: PropTypes.bool,
+            
+            // props from redux state
+            focusHistory: PropTypes.object,
+            focusingStatus: PropTypes.string,
+
+            // props from redux dispatch
             setFocusedItemFromComponent: PropTypes.func.isRequired,
             updateFocusHistory: PropTypes.func.isRequired,
         };          
@@ -32,7 +43,7 @@ function withFocusGrid(WrappedComponent) {
             this.setFocus = this.setFocus.bind(this);
 
             // if an id wasn't passed into the component's props, use the formatted id that prepends the parent's id
-            // with this item's index to keep the current item component unique            
+            // with '_g#' and this item's index to keep the current item component unique            
             let formattedId = id || `${focusableParent.id}_g#${index}`;
             this.state = { id: formattedId };
         }
@@ -44,7 +55,7 @@ function withFocusGrid(WrappedComponent) {
         }
 
         updateFocusGridHistory() {
-            const { updateFocusHistory, index, type } = this.props;
+            const { updateFocusHistory } = this.props;
             const { focusManager } = this.context;
             updateFocusHistory(focusManager);
         }

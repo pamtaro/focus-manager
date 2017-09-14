@@ -10,7 +10,6 @@ function mapDispatchToProps(dispatch) {
     return {
         setFocusedItemFromComponent: (focusManager, focusedItem) => dispatch(setFocusedItemFromComponent(focusManager, focusedItem)),
         updateFocusHistory: (focusManager) => dispatch(updateFocusHistory(focusManager)),
-        focusingHandled: () => dispatch(focusingHandled()),
     };
 }
 
